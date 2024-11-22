@@ -1,5 +1,3 @@
-payload:
-  # > lzzyz Intranet
-  - DOMAIN-KEYWORD,cdnlz
-  - DOMAIN-KEYWORD,lz.cdn
-  - DOMAIN-KEYWORD,lz-cdn
+PROCESS-NAME,cdnlz
+PROCESS-NAME,lz.cdn
+PROCESS-NAME,lz-cdn
