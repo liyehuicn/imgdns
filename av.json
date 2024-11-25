@@ -3,23 +3,25 @@
   "rules": [
     {
       "domain": [
-        "google-ohttp-relay-safebrowsing.fastly-edge.com",
-        "scholar.google.ae",
-        "scholar.google.at",
-        "scholar.google.be",
-        "scholar.google.bg",
-        "scholar.google.ca",
-        "scholar.google.cat",
-        "ocsp.pki.goog"
+        "missav.com",
+        "surrit.com",
+        "javmix.tv",
+        "recombee.com",
+        "cdn2020.com",
+        "cdnedge.live",
+        "turboviplay.com",
+        "fivetiu.com",
+        "7mmtv.sx",
+        "turbosplayer.com",
+        "hgagecdn.com",
+        "coombsneils.sbs",
+        "supjav.com",
+        "recombee.com"
       ],
-      "domain_suffix": [
-        "and",
-        "chrome",
-        "dclk",
-        "gbiz",
-        "gle",
-        "gmail",
-        "ggpht.cn"
+      "domain-keyword": [
+        "missav",
+        "youjizz",
+        "dclk"
       ]
     }
   ]
