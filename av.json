@@ -1,5 +1,26 @@
-payload:
-  # > lzzyz Intranet
-  - DOMAIN-KEYWORD,cdnlz
-  - DOMAIN-KEYWORD,lz.cdn
-  - DOMAIN-KEYWORD,lz-cdn
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain": [
+        "google-ohttp-relay-safebrowsing.fastly-edge.com",
+        "scholar.google.ae",
+        "scholar.google.at",
+        "scholar.google.be",
+        "scholar.google.bg",
+        "scholar.google.ca",
+        "scholar.google.cat",
+        "ocsp.pki.goog"
+      ],
+      "domain_suffix": [
+        "and",
+        "chrome",
+        "dclk",
+        "gbiz",
+        "gle",
+        "gmail",
+        "ggpht.cn"
+      ]
+    }
+  ]
+}
