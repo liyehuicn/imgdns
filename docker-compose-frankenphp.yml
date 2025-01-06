@@ -1,0 +1,30 @@
+services:
+  frankenphp:
+    image: dunglas/frankenphp
+    container_name: web
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/:/etc/caddy/
+      - ./html:/app/public
+
+  mariadb:
+    image: mariadb:10.11.10-ubi
+    container_name: mariadb
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: webroot
+      MYSQL_USER: webroot
+      MYSQL_PASSWORD: webpssword
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    volumes:
+      - ./redis:/data
