@@ -13,7 +13,7 @@ services:
       - ./html:/app/public
 
   mariadb:
-    image: mariadb:10.11.10-ubi
+    image: linuxserver/mariadb:10.11.10
     container_name: mariadb
     restart: always
     network_mode: bridge
