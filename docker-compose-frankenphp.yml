@@ -1,6 +1,6 @@
 services:
   frankenphp:
-    image: dunglas/frankenphp
+    image: dunglas/frankenphp:php8.2-alpine
     container_name: web
     restart: always
     network_mode: bridge
