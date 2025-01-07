@@ -3,7 +3,7 @@ services:
     image: dunglas/frankenphp
     container_name: web
     restart: always
-    network_mode: host
+    network_mode: bridge
     ports:
       - "80:80"
       - "443:443"
@@ -16,6 +16,7 @@ services:
     image: mariadb:10.11.10-ubi
     container_name: mariadb
     restart: always
+    network_mode: bridge
     volumes:
       - ./mysql:/var/lib/mariadb
     environment:
@@ -27,5 +28,6 @@ services:
     image: redis
     container_name: redis
     restart: always
+    network_mode: bridge
     volumes:
       - ./redis:/data
