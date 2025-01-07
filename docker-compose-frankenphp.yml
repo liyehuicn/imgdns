@@ -23,8 +23,6 @@ services:
       - ./mysql:/var/lib/mariadb
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_USER: webuser
-      MYSQL_PASSWORD: webpassword
 
   redis:
     image: redis
