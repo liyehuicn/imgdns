@@ -18,8 +18,8 @@ services:
     volumes:
       - ./mysql:/var/lib/mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: webroot
-      MYSQL_USER: webroot
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: webuser
       MYSQL_PASSWORD: webpssword
 
   redis:
