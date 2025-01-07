@@ -22,7 +22,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_USER: webuser
-      MYSQL_PASSWORD: webpssword
+      MYSQL_PASSWORD: webpassword
 
   redis:
     image: redis
