@@ -7,7 +7,7 @@ services:
     volumes:
       - ./caddy/:/etc/caddy/
       - ./html:/app/public
-      - ./caddy/data:/data/caddy/
+      - ./caddy_data:/data/caddy/
 
   mariadb:
     image: linuxserver/mariadb:10.11.10
