@@ -3,11 +3,7 @@ services:
     image: dunglas/frankenphp:php8.2-alpine
     container_name: web
     restart: always
-    network_mode: bridge
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+    network_mode: host
     volumes:
       - ./caddy/:/etc/caddy/
       - ./html:/app/public
