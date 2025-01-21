@@ -10,7 +10,7 @@ services:
       - ./caddy_data:/data/caddy/
 
   mariadb:
-    image: linuxserver/mariadb:10.11.10
+    image: mariadb
     container_name: mariadb
     restart: always
     network_mode: bridge
