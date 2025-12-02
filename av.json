@@ -1,8 +1,9 @@
 {
-  "version": 1,
+  "version": 2,
   "rules": [
     {
-      "domain": [
+      "domain": "www5.javmost.com",
+      "domain_suffix": [
         "missav.ai",
         "missav.ws",
         "njavtv.com",
