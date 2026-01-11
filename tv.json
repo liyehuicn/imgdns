@@ -169,23 +169,23 @@
           },
           {
             "text": "电影",
-            "id": "10"
+            "id": "1"
           },
           {
             "text": "连续剧",
-            "id": "11"
+            "id": "2"
           },
           {
             "text": "综艺",
-            "id": "12"
+            "id": "4"
           },
           {
             "text": "动漫",
-            "id": "13"
+            "id": "3"
           },
           {
-            "text": "福利",
-            "id": "15"
+            "text": "短剧",
+            "id": "45"
           }
         ],
         "home": "const cate=env.get(\"category\");if(cate==\"/\"){const $=utils_1.kitty.load(await(0,utils_1.req)(env.baseUrl));const titles=$(\".m4-main .m4-meta\").toArray().map(item=>{return $(item).find(\"h3\").text().trim()});const videos=$(\".m4-main .m4-list\").toArray().map(item=>{return $(item).find(\".item\").toArray().map(subItem=>{const id=$(subItem).find(\"a.link\").attr(\"href\")??\"\";const title=$(subItem).find(\"a.title\").text().trim();const remark=$(subItem).find(\".tag2\").text()??\"\";let cover=$(subItem).find(\"img.img\").attr(\"data-src\")??\"\";if(!!cover&&cover.startsWith(\"//\")){cover=`https:${cover}`}return{id,title,cover,remark}})});const list=titles.map((title,index)=>{return{type:\"list\",title,videos:videos[index]}});return{type:\"complex\",data:[{type:\"markdown\",extra:{markdown:`\n> 欢迎使用小猫影视(${utils_1.kitty.VERSION})\n> 该源仅做测试使用，不可用于其他用途\n> 飞机交流群: https://t.me/catmovie1145\n> 小猫其他指南: https://xmpro.netlify.app\n`}},...list]}}const page=env.get(\"page\");const url=`${env.baseUrl}/cat/${cate}-${page}.html`;const html=await(0,utils_1.req)(url);const $=utils_1.kitty.load(html);return $(\".m4-list .item\").toArray().map(item=>{const img=$(item).find(\"img.img\");const id=$(item).find(\"a.link\").attr(\"href\")??\"\";const title=img.attr(\"alt\")??\"\";let cover=img.attr(\"data-src\")??\"\";if(!!cover&&cover.startsWith(\"//\")){cover=`https:${cover}`}const remark=$(item).find(\".tag1\").text()??\"\";return{id,title,cover,remark,playlist:[]}})",
