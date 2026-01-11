@@ -154,9 +154,9 @@
     }
   },
   {
-    "id": "baiduziyuan",
-    "name": "baiduzy",
-    "api": "https://bdzy1.com/",
+    "id": "chenfengtv",
+    "name": "晨风追剧",
+    "api": "https://cdn.fefz.win",
     "type": 1,
     "nsfw": false,
     "extra": {
