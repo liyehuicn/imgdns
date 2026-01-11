@@ -6,7 +6,7 @@
     "nsfw": false,
     "type": 1,
     "extra": {
-      "gfw": false,
+      "gfw": true,
       "searchLimit": 12,
       "js": {
         "category": [
@@ -160,7 +160,7 @@
     "type": 1,
     "nsfw": false,
     "extra": {
-      "gfw": true,
+      "gfw": false,
       "js": {
         "category": [
           {
