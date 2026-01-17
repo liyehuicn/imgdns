@@ -154,9 +154,9 @@
     }
   },
   {
-    "id": "chenfengtv",
-    "name": "晨风追剧",
-    "api": "https://cdn.fefz.win",
+    "id": "yingda",
+    "name": "影达",
+    "api": "https://yingdapc.tv",
     "type": 1,
     "nsfw": false,
     "extra": {
@@ -169,19 +169,19 @@
           },
           {
             "text": "电影",
-            "id": "1"
+            "id": "movie"
           },
           {
             "text": "连续剧",
-            "id": "2"
+            "id": "tv"
           },
           {
             "text": "综艺",
-            "id": "4"
+            "id": "variety"
           },
           {
             "text": "动漫",
-            "id": "3"
+            "id": "anime"
           },
           {
             "text": "短剧",
