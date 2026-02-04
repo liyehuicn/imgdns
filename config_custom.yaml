@@ -1,3 +1,4 @@
+#mosdns自定义配置
 log:
   level: info
   # file: "/var/log/mosdns.log"
@@ -31,20 +32,23 @@ plugins:
     args:
       concurrent: 3
       upstreams:
-        - addr: "https://120.53.53.53/dns-query"
-          idle_timeout: 86400
-        - addr: "https://doh.360.cn/dns-query"
-          idle_timeout: 86400
+        - addr: "https://doh.pub/dns-query"
+          dial_addr: "1.12.12.12"
+          idle_timeout: 300
+        - addr: "https://223.6.6.6/dns-query"
+          idle_timeout: 300
         - addr: "https://223.5.5.5/dns-query"
-          idle_timeout: 86400
+          idle_timeout: 300
   - tag: remote_forward
     type: forward
     args:
       concurrent: 3
       upstreams:
-        - addr: https://cloudflare-dns.com/dns-query
-        - addr: https://dns.google/dns-query
-        # 可加 https://dns.quad9.net/dns-query 等
+        - addr: "https://cloudflare-dns.com/dns-query"
+          idle_timeout: 60
+        - addr: "https://dns.google/dns-query"
+          dial_addr: "8.8.8.8"
+          idle_timeout: 60
 
   # 只用于国内域名的查询序列（可加防污染也可不加）
   - tag: query_local
