@@ -1,0 +1,92 @@
+log:
+  level: info
+  # file: "/var/log/mosdns.log"
+
+api:
+  http: "0.0.0.0:9091"
+
+plugins:
+  # 规则集（保持不变）
+  - tag: geosite_cn
+    type: domain_set
+    args:
+      files:
+        - "/var/mosdns/geosite_cn.txt"
+
+  - tag: geosite_geolocation-!cn
+    type: domain_set
+    args:
+      files:
+        - "/var/mosdns/geosite_geolocation-!cn.txt"
+
+  - tag: geoip_cn
+    type: ip_set
+    args:
+      files:
+        - "/var/mosdns/geoip_cn.txt"
+
+  # 上游（建议都用DoH/DoT加密，防中间人/运营商嗅探）
+  - tag: domestic_forward
+    type: forward
+    args:
+      concurrent: 3
+      upstreams:
+        - addr: https://dns.alidns.com/dns-query     # 阿里 DoH 最稳
+        - addr: https://doh.pub/dns-query            # DNSPod DoH
+        # - addr: udp://223.5.5.5                   # 明文慎用，可删
+
+  - tag: remote_forward
+    type: forward
+    args:
+      concurrent: 3
+      upstreams:
+        - addr: https://cloudflare-dns.com/dns-query
+        - addr: https://dns.google/dns-query
+        # 可加 https://dns.quad9.net/dns-query 等
+
+  # 只用于国内域名的查询序列（可加防污染也可不加）
+  - tag: query_local
+    type: sequence
+    args:
+      - exec: prefer_ipv4
+      - exec: "$domestic_forward"
+      # 可选：防污染（但因为明确是geosite:cn域名，通常污染少）
+      # - matches: "!resp_ip $geoip_cn"
+      #   exec: drop_resp
+
+  # 国外/未知域名的查询序列（直接远程）
+  - tag: query_remote
+    type: sequence
+    args:
+      - exec: prefer_ipv4
+      - exec: "$remote_forward"
+
+  # 主逻辑（最关键修改在这里）
+  - tag: main
+    type: sequence
+    args:
+      # 1. 明确国内域名 → 强制国内上游（最快、最符合本地优化）
+      - matches: qname $geosite_cn
+        exec: "$query_local"
+
+      # 2. 明确国外域名 → 强制远程上游（防泄漏核心）
+      - matches: qname $geosite_geolocation-!cn
+        exec: "$query_remote"
+
+      # 3. 所有未分类 / 新域名 / 灰色域名 → 全部走远程（最严格防泄漏）
+      - exec: "$query_remote"
+      # 如果你仍想保留一点防污染 fallback，可改成：
+      # - exec: "$fallback"   # 但会让部分查询先发国内，有微量泄漏风险
+
+  # 服务器监听（建议用非53端口防意外泄漏到系统DNS）
+  - tag: udp_server
+    type: udp_server
+    args:
+      entry: main
+      listen: "0.0.0.0:5335"
+
+  - tag: tcp_server
+    type: tcp_server
+    args:
+      entry: main
+      listen: "0.0.0.0:5335"
