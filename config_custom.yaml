@@ -31,9 +31,10 @@ plugins:
     args:
       concurrent: 3
       upstreams:
-        - addr: https://dns.alidns.com/dns-query     # 阿里 DoH 最稳
-        - addr: https://doh.pub/dns-query            # DNSPod DoH
-        # - addr: udp://223.5.5.5                   # 明文慎用，可删
+        - addr: "https://223.5.5.5/dns-query"
+          idle_timeout: 86400
+        - addr: "https://119.29.29.29/dns-query"
+          idle_timeout: 86400
 
   - tag: remote_forward
     type: forward
