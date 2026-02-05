@@ -78,29 +78,37 @@ plugins:
   - tag: main
     type: sequence
     args:
+      # 禁用 IPv6
+      - matches: qtype 28
+        exec: reject
+
+      # 缓存
       - exec: "$cache"
-      
-      # 1. 如果明确是国内域名，直接走国内解析并返回
+
+      # 1️⃣ 明确国内域名
       - matches: qname $geosite_cn
-        exec: "$domestic_forward"
+        exec: "$query_local"
       - matches: has_resp
         exec: accept
 
-      # 2. 如果明确是国外域名，直接走国外解析并返回
+      # 2️⃣ 明确国外域名
       - matches: qname $geosite_geolocation-!cn
-        exec: "$remote_forward"
+        exec: "$query_remote"
       - matches: has_resp
         exec: accept
 
-      # 3. 未知域名（日志里报错的那些）：先问国内
-      #- exec: "$domestic_forward"
-      
-      # 4. 判定国内解析结果：如果是国内 IP，直接用；如果是国外 IP（说明被污染了），则丢弃换国外 DNS
+      # 3️⃣ 未知域名 → 先国内
+      - exec: "$query_local"
+
+      # 4️⃣ 如果是国内 IP → 接受
       - matches: resp_ip $geoip_cn
         exec: accept
-      
-      # 5. 兜底：前面都没搞定的，走国外
-      - exec: "$remote_forward"
+
+      # 5️⃣ 否则丢弃污染结果
+      - exec: drop_resp
+
+      # 6️⃣ 再走国外
+      - exec: "$query_remote"
 
   # 服务器监听（建议用非53端口防意外泄漏到系统DNS）
   - tag: udp_server
