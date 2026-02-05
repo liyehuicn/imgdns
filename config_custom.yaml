@@ -93,7 +93,7 @@ plugins:
         exec: accept
 
       # 3. 未知域名（日志里报错的那些）：先问国内
-      - exec: "$domestic_forward"
+      #- exec: "$domestic_forward"
       
       # 4. 判定国内解析结果：如果是国内 IP，直接用；如果是国外 IP（说明被污染了），则丢弃换国外 DNS
       - matches: resp_ip $geoip_cn
@@ -101,8 +101,6 @@ plugins:
       
       # 5. 兜底：前面都没搞定的，走国外
       - exec: "$remote_forward"
-      # 如果你仍想保留一点防污染 fallback，可改成：
-      # - exec: "$fallback"   # 但会让部分查询先发国内，有微量泄漏风险
 
   # 服务器监听（建议用非53端口防意外泄漏到系统DNS）
   - tag: udp_server
