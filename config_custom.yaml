@@ -78,19 +78,29 @@ plugins:
   - tag: main
     type: sequence
     args:
-      # 1. 核心步骤：优先匹配缓存 ---
-      - exec: "$cache"            # 如果缓存里有，直接返回结果，不再走下面的网络请求
+      - exec: "$cache"
       
-      # 2. 明确国内域名 → 强制国内上游（最快、最符合本地优化）
+      # 1. 如果明确是国内域名，直接走国内解析并返回
       - matches: qname $geosite_cn
-        exec: "$query_local"
+        exec: "$domestic_forward"
+      - matches: has_resp
+        exec: accept
 
-      # 3. 明确国外域名 → 强制远程上游（防泄漏核心）
+      # 2. 如果明确是国外域名，直接走国外解析并返回
       - matches: qname $geosite_geolocation-!cn
-        exec: "$query_remote"
+        exec: "$remote_forward"
+      - matches: has_resp
+        exec: accept
 
-      # 4. 所有未分类 / 新域名 / 灰色域名 → 全部走远程（最严格防泄漏）
-      - exec: "$query_remote"
+      # 3. 未知域名（日志里报错的那些）：先问国内
+      - exec: "$domestic_forward"
+      
+      # 4. 判定国内解析结果：如果是国内 IP，直接用；如果是国外 IP（说明被污染了），则丢弃换国外 DNS
+      - matches: resp_ip $geoip_cn
+        exec: accept
+      
+      # 5. 兜底：前面都没搞定的，走国外
+      - exec: "$remote_forward"
       # 如果你仍想保留一点防污染 fallback，可改成：
       # - exec: "$fallback"   # 但会让部分查询先发国内，有微量泄漏风险
 
