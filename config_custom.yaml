@@ -1,4 +1,4 @@
-#mosdns自定义配置
+#mosdns5.3.3自定义配置
 log:
   level: info
   # file: "/var/log/mosdns.log"
