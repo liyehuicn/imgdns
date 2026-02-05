@@ -1,20 +1,20 @@
-# mosdns自定义配置
+#mosdns自定义配置
 log:
   level: info
+  # file: "/var/log/mosdns.log"
 
 api:
   http: "0.0.0.0:9091"
 
 plugins:
-  # --- 缓存插件定义 ---
+  # 规则集（保持不变）
   - tag: cache
     type: cache
     args:
       size: 10240               # 缓存条数。建议设为 10240，占用内存极小但命中率高
-      lazy_cache_ttl: 86400     # 开启懒缓存（24小时）。过期后先返回旧 IP 保证秒开，同时后台更新
+      lazy_cache_ttl: 86400     # 开启懒缓存24小时。过期后先返回旧 IP 保证秒开，同时后台更新
       dump_file: "/var/mosdns/cache.dump" # 重启后自动加载之前的缓存，无需重新预热
-
-  # 规则集
+      
   - tag: geosite_cn
     type: domain_set
     args:
@@ -33,7 +33,7 @@ plugins:
       files:
         - "/var/mosdns/geoip_cn.txt"
 
-  # 上游
+  # 上游（建议都用DoH/DoT加密，防中间人/运营商嗅探）
   - tag: domestic_forward
     type: forward
     args:
@@ -43,56 +43,58 @@ plugins:
           dial_addr: "1.12.12.12"
           idle_timeout: 300
         - addr: "https://223.6.6.6/dns-query"
-          dial_addr: "223.6.6.6"
           idle_timeout: 300
         - addr: "https://223.5.5.5/dns-query"
-          dial_addr: "223.5.5.5"
           idle_timeout: 300
-
   - tag: remote_forward
     type: forward
     args:
       concurrent: 3
       upstreams:
         - addr: "https://cloudflare-dns.com/dns-query"
-          dial_addr: "1.1.1.1"
           idle_timeout: 60
         - addr: "https://dns.google/dns-query"
           dial_addr: "8.8.8.8"
           idle_timeout: 60
 
-  # 查询序列
+  # 只用于国内域名的查询序列（可加防污染也可不加）
   - tag: query_local
     type: sequence
     args:
       - exec: prefer_ipv4
       - exec: "$domestic_forward"
+      # 可选：防污染（但因为明确是geosite:cn域名，通常污染少）
+      # - matches: "!resp_ip $geoip_cn"
+      #   exec: drop_resp
 
+  # 国外/未知域名的查询序列（直接远程）
   - tag: query_remote
     type: sequence
     args:
       - exec: prefer_ipv4
       - exec: "$remote_forward"
 
-  # 主逻辑
+  # 主逻辑（最关键修改在这里）
   - tag: main
     type: sequence
     args:
-      # --- 1. 核心步骤：优先匹配缓存 ---
-      - exec: $cache            # 如果缓存里有，直接返回结果，不再走下面的网络请求
-
-      # 2. 明确国内域名
+      # 1. 核心步骤：优先匹配缓存 ---
+      - exec: "$cache"            # 如果缓存里有，直接返回结果，不再走下面的网络请求
+      
+      # 2. 明确国内域名 → 强制国内上游（最快、最符合本地优化）
       - matches: qname $geosite_cn
         exec: "$query_local"
 
-      # 3. 明确国外域名
+      # 3. 明确国外域名 → 强制远程上游（防泄漏核心）
       - matches: qname $geosite_geolocation-!cn
         exec: "$query_remote"
 
-      # 4. 所有未分类域名
+      # 4. 所有未分类 / 新域名 / 灰色域名 → 全部走远程（最严格防泄漏）
       - exec: "$query_remote"
+      # 如果你仍想保留一点防污染 fallback，可改成：
+      # - exec: "$fallback"   # 但会让部分查询先发国内，有微量泄漏风险
 
-  # 服务器监听
+  # 服务器监听（建议用非53端口防意外泄漏到系统DNS）
   - tag: udp_server
     type: udp_server
     args:
