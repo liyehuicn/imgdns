@@ -51,7 +51,7 @@ plugins:
     args:
       concurrent: 3
       upstreams:
-        - addr: "https://cloudflare-dns.com/dns-query"
+        - addr: "https://security.cloudflare-dns.com/dns-query"
           idle_timeout: 60
         - addr: "https://dns.google/dns-query"
           dial_addr: "8.8.8.8"
