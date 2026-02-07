@@ -58,6 +58,7 @@ plugins:
       concurrent: 3
       upstreams:
         - addr: "https://security.cloudflare-dns.com/dns-query"
+          dial_addr: "1.1.1.2"
           idle_timeout: 60
         - addr: "https://dns.google/dns-query"
           dial_addr: "8.8.8.8"
@@ -80,14 +81,14 @@ plugins:
       - exec: prefer_ipv4
       - exec: "$remote_forward"
 
-  # 主逻辑
+  # 主逻辑（最关键修改在这里）
   - tag: main
     type: sequence
     args:
-      # 缓存
+      # 缓存（提前放，保持不变）
       - exec: "$cache"
 
-      # 去广告
+      # 去广告（保持不变）
       - matches: qname $geosite_ads
         exec: reject
 
@@ -96,7 +97,11 @@ plugins:
         exec: "$query_local"
       - matches: has_resp
         exec: accept
-
+        
+      # 禁用 IPv6
+      - matches: qtype 28
+        exec: reject
+        
       # 2. 明确国外域名 → 国外上游
       - matches: qname $geosite_geolocation-!cn
         exec: "$query_remote"
@@ -110,7 +115,6 @@ plugins:
 
       # 4. 国外失败 → 再国内（保底，但很少触发）
       - exec: "$query_local"
-
   # 服务器监听（建议用非53端口防意外泄漏到系统DNS）
   - tag: udp_server
     type: udp_server
