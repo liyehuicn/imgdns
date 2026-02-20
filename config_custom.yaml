@@ -7,12 +7,6 @@ api:
 
 plugins:
   # 规则集
-  - tag: geosite_ads  #去广告功能
-    type: domain_set
-    args:
-      files:
-        - "/root/geosite_ads.txt"    #去广告文件
-  
   - tag: cache
     type: cache
     args:
@@ -56,13 +50,22 @@ plugins:
     type: forward
     args:
       concurrent: 3
-      upstreams:
-        - addr: "https://security.cloudflare-dns.com/dns-query"
-          dial_addr: "1.1.1.2"
+      upstreams:     
+        - addr: "https://doh.opendns.com/dns-query"
+          dial_addr: "146.112.41.2"
+          idle_timeout: 60
+        - addr: "https://cloudflare-dns.com/dns-query"
           idle_timeout: 60
         - addr: "https://dns.google/dns-query"
           dial_addr: "8.8.8.8"
           idle_timeout: 60
+          socks5: "127.0.0.1:1081"   # 国外 DNS 通过代理访问
+        - addr: "https://dns.bebasid.com/dns-query"
+          dial_addr: "160.250.227.24"
+          idle_timeout: 60
+        - addr: "https://dns.controld.com/comss"
+          dial_addr: "76.76.2.22"
+          idle_timeout: 60  
 
   # 只用于国内域名的查询序列（可加防污染也可不加）
   - tag: query_local
@@ -88,17 +91,13 @@ plugins:
       # 缓存（提前放，保持不变）
       - exec: "$cache"
 
-      # 去广告（保持不变）
-      - matches: qname $geosite_ads
-        exec: reject
-
       # 1. 明确国内域名 → 国内上游
       - matches: qname $geosite_cn
         exec: "$query_local"
       - matches: has_resp
         exec: accept
-        
-      # 禁用 IPv6
+
+      # 禁用 IPv6（保持不变）
       - matches: qtype 28
         exec: reject
         
