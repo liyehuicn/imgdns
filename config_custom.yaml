@@ -1,3 +1,4 @@
+#MosDNS v5.3.3 openwrt自定义配置
 log:
   level: info
   # file: "/var/log/mosdns.log"
