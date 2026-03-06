@@ -117,8 +117,8 @@ plugins:
     type: sequence
     args:
       - exec: prefer_ipv4
+      - exec: ecs
       - exec: "$domestic_forward"
-
       # 防污染：如果返回的 IP 不在中国 → 丢弃
       - matches: "!resp_ip $geoip_cn"
         exec: drop_resp
