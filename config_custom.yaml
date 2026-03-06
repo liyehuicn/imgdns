@@ -23,7 +23,13 @@ plugins:
     type: domain_set
     args:
       files:
-        - "/etc/mosdns/rule/blocklist.txt"
+        - "/etc/mosdns/rule/blocklist.txt"  #黑名单
+     
+  - tag: greylist                          # 新增灰名单 domain_set
+    type: domain_set
+    args:
+      files: 
+        - "/etc/mosdns/rule/greylist.txt"  # 灰名单文件   
  
   - tag: geosite_cn
     type: domain_set
@@ -49,7 +55,7 @@ plugins:
         - addr: "https://doh.pub/dns-query"
           dial_addr: "1.12.12.12"
           idle_timeout: 300
-          bootstrap: "223.5.5.5"    #解析域名DNS服务器
+          bootstrap: "223.5.5.5"    #解析DNS域名服务器
         - addr: "https://223.6.6.6/dns-query"
           dial_addr: "223.6.6.6"          
           bootstrap: "114.114.114.114"
@@ -63,10 +69,13 @@ plugins:
     args:
       concurrent: 3
       upstreams:
-        - addr: "https://dns.adguard-dns.com/dns-query"
+        - addr: "https://dns.google/dns-query"
           idle_timeout: 60
-          bootstrap: "8.8.8.8"
+          bootstrap: "1.1.1.1"
           socks5: "127.0.0.1:1081"
+        #- addr: "https://1.1.1.1/dns-query"   # 加 Cloudflare 备选（国外稳）
+          #dial_addr: "1.1.1.1"
+          #bootstrap: "8.8.8.8"   
         
   # 只用于国内域名的查询序列（可加防污染也可不加）
   - tag: query_local
@@ -74,8 +83,10 @@ plugins:
     args:
       - exec: prefer_ipv4
       - exec: "$domestic_forward"
-
-  # 国外/未知域名的查询序列（直接远程.防泄露）
+      # 可选：防污染（如果响应 IP 不是国内 → 丢弃）
+      - matches: "!resp_ip $geoip_cn"
+        exec: drop_resp
+  # 国外/未知域名的查询序列（直接远程）
   - tag: query_remote
     type: sequence
     args:
@@ -85,41 +96,43 @@ plugins:
   - tag: main
     type: sequence
     args:
-      # 缓存（提前放，保持不变）
-      - exec: "$cache"
-      
-      # 新加：白名单优先走国内
+      - exec: "$cache"  # 先查缓存
+
+    # 白名单 → 国内
       - matches: qname $whitelist
         exec: "$query_local"
-      - matches: has_resp
-        exec: accept
-        
-      # 先检查黑名单，屏蔽
+
+    # 黑名单 → 拒绝
       - matches: qname $blocklist
-        exec: reject 0   # 0 表示 NXDOMAIN，3 表示 REFUSED，根据需要
-      - matches: has_resp
-        exec: accept
-        
-      # 1. 明确国内域名 → 国内上游
+        exec: reject 0
+
+    # 灰名单 → 强制 
+      - matches: qname $greylist
+        exec: "$remote_forward"  
+
+    # 国内域名 → query_local
       - matches: qname $geosite_cn
         exec: "$query_local"
-      - matches: has_resp
-        exec: accept
-      # 禁用 IPv6（保持不变）
+
+    # 禁用 IPv6
       - matches: qtype 28
         exec: reject
-       
-      # 2. 明确国外域名 → 国外上游
+
+    # 国外域名 → query_remote
       - matches: qname $geosite_geolocation-!cn
         exec: "$query_remote"
-      - matches: has_resp
-        exec: accept
-      # 3. 未知域名 → **先国外**（防污染优先）
+
+    # 默认未知 → 先国外（防污染）
       - exec: "$query_remote"
+
+    # 全局：只要有响应就接受（覆盖上面所有上游的 resp）
       - matches: has_resp
         exec: accept
-      # 4. 国外失败 → 再国内（保底，但很少触发）
+
+    # 兜底：国外失败再试国内
       - exec: "$query_local"
+    # 可选：最终没响应 reject
+    # - exec: reject 3
   # 服务器监听（建议用非53端口防意外泄漏到系统DNS）
   - tag: udp_server
     type: udp_server
