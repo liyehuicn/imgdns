@@ -169,10 +169,7 @@ plugins:
       # 第五步：国内域名 → 国内
       - matches: qname $geosite_cn
         exec: "$query_local"
-      # 第六步：禁用 IPv6 AAAA
-      - matches: qtype 28
-        exec: reject
-      # 第七步：国外域名 → 国外
+      # 第六步：国外域名 → 国外
       - matches: qname $geosite_geolocation-!cn
         exec: "$query_remote"
       - matches: has_resp
