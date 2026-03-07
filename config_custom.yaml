@@ -114,7 +114,7 @@ plugins:
   - tag: remote_forward
     type: forward
     args:
-      concurrent: 3
+      concurrent: 1 # 单个上游，无需并发
       upstreams:
         - addr: "https://dns.adguard-dns.com/dns-query"          # 示例：Cloudflare DoH（或你实际想用的国外 DoH）
           dial_addr: "1.1.1.1"                       # 固定 IP 防污染
