@@ -115,7 +115,7 @@ plugins:
     args:
       concurrent: 1
       upstreams:
-        - addr: "https://cf.510910.xyz/chenfeng/https/doh.fefz.win/dns-query"
+        - addr: "https://v.recipes/dns/public.dns.iij.jp/dns-query"
           #socks5: "192.168.100.2:1081"  # 如需代理可取消注释
           bootstrap: "119.29.29.29"
           idle_timeout: 60
