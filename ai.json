@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain": [
+        "openai.com",
+        "chatgpt.com",
+        "oaistatic.com",
+        "oaiusercontent.com",
+        "anthropic.com",
+        "claude.ai",
+        "google.com",
+        "gemini.google.com",
+        "aistudio.google.com",
+        "googleapis.com",
+        "gstatic.com",
+        "bing.com",
+        "bingapis.com",
+        "copilot.microsoft.com",
+        "sydney.bing.com",
+        "microsoftonline.com",
+        "live.com",
+        "msauth.net",
+        "cloud.microsoft",
+        "githubcopilot.com",
+        "github.com",
+        "api.github.com",
+        "copilot-proxy.githubusercontent.com",
+        "x.ai",
+        "grok.com",
+        "x.com",
+        "perplexity.ai"
+      ],
+      "domain_suffix": [
+        ".openai.com",
+        ".chatgpt.com",
+        ".oaistatic.com",
+        ".oaiusercontent.com",
+        ".anthropic.com",
+        ".claude.ai",
+        ".gemini.google.com",
+        ".aistudio.google.com",
+        ".bing.com",
+        ".bingapis.com",
+        ".microsoft.com",
+        ".microsoftonline.com",
+        ".githubcopilot.com",
+        ".x.ai",
+        ".grok.com",
+        ".perplexity.ai"
+      ]
+    }
+  ]
+}
